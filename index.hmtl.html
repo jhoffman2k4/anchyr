@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Anchyr — Miami Boat Rentals</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0a1628;--deep:#06101e;--ocean:#0d3b6e;--teal:#0e7490;
+  --aqua:#22d3ee;--white:#fff;--gold:#c9a227;--green:#10b981;
+  --red:#ef4444;--muted:rgba(255,255,255,0.45);
+}
+html{scroll-behavior:smooth;}
+body{background:var(--deep);color:var(--white);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;min-height:100vh;}
+.cursor{position:fixed;width:12px;height:12px;background:var(--aqua);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s,height .25s;mix-blend-mode:screen;}
+.cursor-ring{position:fixed;width:38px;height:38px;border:1px solid rgba(34,211,238,0.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s;}
+
+/* ─── PAGE SYSTEM ─────────────────────────── */
+.page{display:none;min-height:100vh;animation:pageIn .35s ease;}
+.page.active{display:block;}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ─── NAV ─────────────────────────────────── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:22px 60px;transition:background .4s,padding .4s;}
+.nav.solid{background:rgba(6,16,30,0.96);backdrop-filter:blur(20px);padding:14px 60px;border-bottom:1px solid rgba(34,211,238,0.09);}
+.logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;letter-spacing:.05em;color:var(--white);cursor:none;background:none;border:none;}
+.logo span{color:var(--aqua);}
+.nav-links{display:flex;gap:36px;list-style:none;align-items:center;}
+.nav-links button{background:none;border:none;color:rgba(255,255,255,0.65);font-family:'DM Sans',sans-serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:none;transition:color .25s;padding:0;}
+.nav-links button:hover{color:var(--aqua);}
+.nav-cta{background:var(--aqua)!important;color:var(--deep)!important;padding:9px 22px!important;border-radius:2px;font-weight:500!important;}
+.nav-cta:hover{background:var(--white)!important;}
+.nav-user{display:flex;align-items:center;gap:10px;background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.2);border-radius:20px;padding:6px 14px;cursor:none;}
+.nav-user-name{font-size:13px;color:var(--aqua);}
+.nav-signout{background:none;border:none;color:rgba(255,255,255,0.35);font-size:12px;cursor:none;font-family:'DM Sans',sans-serif;padding:0;margin-left:6px;}
+.nav-signout:hover{color:var(--red);}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:none;padding:4px;}
+.hamburger span{display:block;width:22px;height:1px;background:var(--white);transition:.3s;}
+
+/* ─── SHARED ──────────────────────────────── */
+.btn{display:inline-block;font-family:'DM Sans',sans-serif;font-size:13px;letter-spacing:.07em;text-transform:uppercase;border-radius:2px;cursor:none;border:none;transition:background .25s,transform .2s,color .25s,box-shadow .25s;}
+.btn-primary{background:var(--aqua);color:var(--deep);padding:14px 32px;font-weight:500;}
+.btn-primary:hover{background:var(--white);transform:translateY(-2px);box-shadow:0 16px 40px rgba(34,211,238,0.2);}
+.btn-outline{background:transparent;color:var(--white);padding:14px 32px;border:1px solid rgba(255,255,255,0.2);}
+.btn-outline:hover{border-color:var(--aqua);color:var(--aqua);}
+.btn-sm{padding:9px 20px;font-size:12px;}
+.eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--aqua);margin-bottom:14px;}
+.display{font-family:'Cormorant Garamond',serif;font-weight:300;line-height:1.02;}
+.display em{font-style:italic;color:var(--aqua);}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:6px;}
+.tag{display:inline-block;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.2);color:var(--aqua);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:2px;}
+.divider{height:1px;background:rgba(255,255,255,0.06);margin:24px 0;}
+footer.site-footer{background:#040d18;padding:48px 60px 32px;border-top:1px solid rgba(255,255,255,0.05);}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;}
+.footer-inner p{color:rgba(255,255,255,0.22);font-size:13px;}
+.footer-links{display:flex;gap:24px;}
+.footer-links button{background:none;border:none;color:rgba(255,255,255,0.38);font-size:13px;cursor:none;font-family:'DM Sans',sans-serif;transition:color .25s;}
+.footer-links button:hover{color:var(--aqua);}
+
+/* ─── FORM FIELDS ────────────────────────── */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.field label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--aqua);}
+.field input,.field select,.field textarea{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;padding:13px 16px;outline:none;transition:border-color .25s;cursor:none;width:100%;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--aqua);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,0.2);}
+.field select option{background:var(--navy);}
+.field textarea{resize:vertical;min-height:100px;line-height:1.6;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+/* ─── HOME PAGE ──────────────────────────── */
+.hero{position:relative;height:100vh;min-height:680px;display:flex;align-items:center;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 60%,rgba(13,59,110,.7) 0%,transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(14,116,144,.3) 0%,transparent 50%),linear-gradient(180deg,var(--deep) 0%,#091525 100%);}
+.wave-svg{position:absolute;bottom:0;left:0;width:100%;opacity:.1;pointer-events:none;}
+.particle{position:absolute;border-radius:50%;background:var(--aqua);opacity:.25;animation:rise linear infinite;}
+@keyframes rise{0%{transform:translateY(100vh);opacity:0;}10%{opacity:.3;}90%{opacity:.1;}100%{transform:translateY(-40px);opacity:0;}}
+.loc-pill{position:absolute;top:90px;right:60px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.2);color:var(--aqua);font-size:12px;letter-spacing:.08em;padding:7px 14px;border-radius:2px;opacity:0;animation:fadeIn 1s .9s forwards;}
+.hero-content{position:relative;z-index:2;padding:0 60px;max-width:880px;}
+.hero-eye{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--aqua);margin-bottom:20px;opacity:0;animation:up .7s .2s forwards;}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(60px,8vw,116px);font-weight:300;line-height:.95;letter-spacing:-.02em;margin-bottom:28px;opacity:0;animation:up .7s .4s forwards;}
+.hero-title em{font-style:italic;color:var(--aqua);}
+.hero-sub{font-size:17px;color:rgba(255,255,255,.55);line-height:1.7;max-width:460px;margin-bottom:44px;opacity:0;animation:up .7s .6s forwards;}
+.hero-btns{display:flex;gap:14px;opacity:0;animation:up .7s .8s forwards;}
+.hero-stats{position:absolute;bottom:54px;right:60px;display:flex;gap:44px;opacity:0;animation:up .7s 1s forwards;}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;line-height:1;}
+.stat-lbl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:3px;}
+.scroll-hint{position:absolute;bottom:36px;left:60px;display:flex;align-items:center;gap:14px;opacity:0;animation:fadeIn 1s 1.1s forwards;}
+.scroll-line{width:40px;height:1px;background:var(--aqua);animation:pulse-line 2s 1.5s infinite;}
+@keyframes pulse-line{0%,100%{width:40px;}50%{width:65px;opacity:.5;}}
+.scroll-lbl{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.3);}
+@keyframes up{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* SEARCH BAR */
+.search-section{position:relative;z-index:10;margin-top:-38px;padding:0 60px;}
+.search-bar{background:rgba(255,255,255,.05);backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:28px 36px;display:flex;gap:20px;align-items:flex-end;max-width:1100px;}
+.sf{flex:1;}
+.sf label{display:block;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--aqua);margin-bottom:7px;}
+.sf input,.sf select{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;padding:7px 0;outline:none;transition:border-color .25s;cursor:none;}
+.sf input:focus,.sf select:focus{border-color:var(--aqua);}
+.sf select option{background:var(--navy);}
+.search-go{background:var(--aqua);color:var(--deep);border:none;padding:14px 32px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;border-radius:2px;cursor:none;white-space:nowrap;transition:background .25s,transform .2s;}
+.search-go:hover{background:var(--white);transform:translateY(-2px);}
+
+/* HOME SECTIONS */
+.section{padding:100px 60px;}
+.section-hd{margin-bottom:52px;}
+.section-hd .display{font-size:clamp(36px,4.5vw,64px);}
+.section-hdr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:52px;}
+
+/* BOATS GRID */
+.boats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.bcard{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;cursor:none;opacity:0;transform:translateY(22px);transition:opacity .5s,transform .5s,box-shadow .35s,border-color .3s;}
+.bcard.vis{opacity:1;transform:translateY(0);}
+.bcard:hover{transform:translateY(-7px)!important;box-shadow:0 36px 72px rgba(0,0,0,.45);border-color:rgba(34,211,238,.22);}
+.bcard-img{height:210px;display:flex;align-items:center;justify-content:center;font-size:62px;position:relative;}
+.bg1{background:linear-gradient(135deg,#0d3b6e,#0e7490);}
+.bg2{background:linear-gradient(135deg,#1a1a5e,#0d3b6e);}
+.bg3{background:linear-gradient(135deg,#0e7490,#0d4f3b);}
+.bg4{background:linear-gradient(135deg,#4a1d56,#0d3b6e);}
+.bg5{background:linear-gradient(135deg,#0d3b6e,#1a1a5e);}
+.bg6{background:linear-gradient(135deg,#0e7490,#0a1628);}
+.bg7{background:linear-gradient(135deg,#0a2a4a,#0e7490);}
+.bg8{background:linear-gradient(135deg,#1a0a2e,#0d3b6e);}
+.bg9{background:linear-gradient(135deg,#0d4f3b,#0e7490);}
+.bcard-badge{position:absolute;top:13px;left:13px;background:var(--aqua);color:var(--deep);font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:2px;}
+.bcard-body{padding:20px;}
+.bcard-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;margin-bottom:3px;}
+.bcard-type{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:13px;}
+.bcard-specs{display:flex;gap:16px;margin-bottom:16px;}
+.spec{font-size:11px;color:rgba(255,255,255,.4);}
+.spec strong{display:block;font-size:13px;font-weight:400;color:rgba(255,255,255,.8);}
+.bcard-foot{display:flex;justify-content:space-between;align-items:center;padding-top:13px;border-top:1px solid rgba(255,255,255,.06);}
+.bcard-price{color:var(--aqua);font-size:20px;font-weight:500;}
+.bcard-price small{color:rgba(255,255,255,.3);font-size:11px;font-weight:300;}
+.bcard-rating{color:var(--gold);font-size:11px;}
+.view-btn{background:transparent;border:1px solid rgba(34,211,238,.3);color:var(--aqua);padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:2px;cursor:none;transition:background .25s,color .25s;}
+.view-btn:hover{background:var(--aqua);color:var(--deep);}
+
+/* HOW IT WORKS */
+.how-section{background:var(--navy);position:relative;overflow:hidden;}
+.how-section::before{content:'';position:absolute;top:-180px;right:-180px;width:550px;height:550px;border-radius:50%;border:1px solid rgba(34,211,238,.05);}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.steps{display:flex;flex-direction:column;gap:44px;}
+.step{display:flex;gap:22px;align-items:flex-start;opacity:0;transform:translateX(-18px);transition:opacity .5s,transform .5s;}
+.step.vis{opacity:1;transform:translateX(0);}
+.step-n{font-family:'Cormorant Garamond',serif;font-size:60px;font-weight:300;color:rgba(34,211,238,.1);line-height:1;min-width:56px;}
+.step-c h3{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;margin-bottom:8px;}
+.step-c p{color:rgba(255,255,255,.42);font-size:14px;line-height:1.7;}
+.demo-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;width:290px;overflow:hidden;transform:rotate(-2deg);box-shadow:0 36px 72px rgba(0,0,0,.4);margin:auto;transition:transform .4s;}
+.demo-card:hover{transform:rotate(0deg) scale(1.02);}
+.demo-img{height:170px;background:linear-gradient(135deg,var(--ocean),var(--teal));display:flex;align-items:center;justify-content:center;font-size:68px;}
+.demo-body{padding:20px;}
+.demo-tag{display:inline-block;background:rgba(34,211,238,.1);color:var(--aqua);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:2px;margin-bottom:9px;}
+.demo-body h4{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;margin-bottom:5px;}
+.demo-body p{color:rgba(255,255,255,.4);font-size:12px;}
+.demo-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+.demo-price{color:var(--aqua);font-size:19px;font-weight:500;}
+.demo-stars{color:var(--gold);font-size:12px;}
+
+/* WHY */
+.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:52px;}
+.why-card{padding:32px 26px;border:1px solid rgba(255,255,255,.06);border-radius:4px;opacity:0;transform:translateY(18px);transition:opacity .5s,transform .5s,border-color .25s,background .25s;}
+.why-card.vis{opacity:1;transform:translateY(0);}
+.why-card:hover{border-color:rgba(34,211,238,.2);background:rgba(34,211,238,.03);transform:translateY(-4px)!important;}
+.why-icon{font-size:34px;margin-bottom:18px;display:block;}
+.why-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;margin-bottom:10px;}
+.why-card p{font-size:13px;color:rgba(255,255,255,.38);line-height:1.7;}
+
+/* OWNER */
+.owner-section{background:linear-gradient(135deg,var(--ocean) 0%,var(--teal) 50%,#0d4f3b 100%);position:relative;overflow:hidden;}
+.owner-section::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/svg%3E");}
+.owner-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.owner-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,58px);font-weight:300;line-height:1.05;margin-bottom:20px;}
+.owner-sub{font-size:15px;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:32px;}
+.earn-widget{background:rgba(0,0,0,.25);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:32px;}
+.earn-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:10px;}
+.rate-wrap{display:flex;align-items:center;gap:5px;border-bottom:2px solid var(--aqua);padding-bottom:10px;margin-bottom:24px;}
+.rate-dollar{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--aqua);line-height:1;}
+.rate-input{background:transparent;border:none;outline:none;font-family:'Cormorant Garamond',serif;font-size:50px;font-weight:300;color:var(--white);width:150px;cursor:none;-moz-appearance:textfield;}
+.rate-input::-webkit-outer-spin-button,.rate-input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.rate-per{font-size:15px;color:rgba(255,255,255,.35);align-self:flex-end;padding-bottom:7px;}
+.earn-rows-wrap{opacity:0;transform:translateY(7px);transition:opacity .5s .2s,transform .5s .2s;}
+.earn-rows-wrap.show{opacity:1;transform:translateY(0);}
+.earn-result{opacity:0;transform:translateY(8px);transition:opacity .6s .55s,transform .6s .55s;}
+.earn-result.show{opacity:1;transform:translateY(0);}
+.earn-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;}
+.earn-row:last-child{border-bottom:none;}
+.earn-row span:first-child{color:rgba(255,255,255,.5);}
+.earn-hl{color:var(--aqua)!important;}
+.earn-bar{height:3px;background:rgba(255,255,255,.14);border-radius:2px;margin-bottom:7px;overflow:hidden;}
+.earn-fill{height:100%;background:var(--white);border-radius:2px;width:0;transition:width 1.4s ease;}
+.earn-fill.go{width:78%;}
+.earn-caption{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:16px;}
+.earn-num{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;line-height:1;}
+
+/* TESTIMONIALS */
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:52px;}
+.test-card{padding:36px;border:1px solid rgba(255,255,255,.06);border-radius:4px;opacity:0;transform:translateY(18px);transition:opacity .5s,transform .5s;}
+.test-card.vis{opacity:1;transform:translateY(0);}
+.test-stars{color:var(--gold);font-size:15px;margin-bottom:18px;}
+.test-text{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300;font-style:italic;line-height:1.55;color:rgba(255,255,255,.82);margin-bottom:22px;}
+.test-author{display:flex;align-items:center;gap:11px;}
+.test-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--ocean),var(--teal));display:flex;align-items:center;justify-content:center;font-size:15px;}
+.test-name{font-size:13px;font-weight:500;}
+.test-loc{font-size:11px;color:rgba(255,255,255,.32);}
+
+/* CTA */
+.cta-section{background:var(--deep);text-align:center;padding:130px 60px;position:relative;overflow:hidden;}
+.cta-ring{position:absolute;border-radius:50%;border:1px solid rgba(34,211,238,.05);top:50%;left:50%;transform:translate(-50%,-50%);animation:rpulse 4s ease-in-out infinite;}
+@keyframes rpulse{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1);}50%{opacity:.9;transform:translate(-50%,-50%) scale(1.05);}}
+.cta-inner{position:relative;z-index:1;}
+.cta-title{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,6vw,82px);font-weight:300;line-height:1.05;margin-bottom:20px;}
+.cta-sub{font-size:16px;color:rgba(255,255,255,.42);margin-bottom:44px;}
+.cta-btns{display:flex;gap:14px;justify-content:center;}
+
+/* ─── BROWSE PAGE ────────────────────────── */
+.page-hdr{padding:110px 60px 40px;border-bottom:1px solid rgba(255,255,255,.05);}
+.page-hdr h1{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1;}
+.page-hdr p{color:rgba(255,255,255,.4);font-size:15px;margin-top:10px;}
+.filter-bar{padding:20px 60px;background:var(--navy);border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:12px;align-items:center;flex-wrap:wrap;position:sticky;top:62px;z-index:50;}
+.filter-lbl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-right:4px;}
+.fbtn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);padding:7px 16px;border-radius:18px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:none;transition:all .22s;}
+.fbtn:hover,.fbtn.active{background:var(--aqua);border-color:var(--aqua);color:var(--deep);}
+.fsel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--white);padding:7px 14px;border-radius:18px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:none;outline:none;appearance:none;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2222d3ee' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+.fsel option{background:var(--navy);}
+.results-n{margin-left:auto;font-size:12px;color:rgba(255,255,255,.3);}
+.browse-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:44px 60px 80px;}
+.pagination{display:flex;justify-content:center;gap:7px;padding:0 60px 72px;}
+.pgn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.1);border-radius:2px;font-size:13px;color:rgba(255,255,255,.45);cursor:none;transition:all .22s;}
+.pgn:hover,.pgn.active{border-color:var(--aqua);color:var(--aqua);}
+
+/* ─── BOAT DETAIL PAGE ───────────────────── */
+.breadcrumb{padding:85px 60px 18px;display:flex;gap:9px;align-items:center;font-size:12px;color:rgba(255,255,255,.3);}
+.breadcrumb button{background:none;border:none;color:rgba(255,255,255,.35);font-family:'DM Sans',sans-serif;font-size:12px;cursor:none;transition:color .22s;}
+.breadcrumb button:hover{color:var(--aqua);}
+.breadcrumb span{color:rgba(255,255,255,.55);}
+.gallery{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:5px;height:440px;padding:0 60px;margin-bottom:52px;}
+.gal-main{background:linear-gradient(135deg,#0d3b6e,#0e7490);border-radius:6px 0 0 6px;display:flex;align-items:center;justify-content:center;font-size:110px;grid-row:1/3;position:relative;}
+.gal-t1{background:linear-gradient(135deg,#1a1a5e,#0d3b6e);border-radius:0 6px 0 0;display:flex;align-items:center;justify-content:center;font-size:46px;}
+.gal-t2{background:linear-gradient(135deg,#0e7490,#0a1628);border-radius:0 0 6px 0;display:flex;align-items:center;justify-content:center;font-size:46px;}
+.detail-wrap{display:grid;grid-template-columns:1fr 360px;gap:52px;padding:0 60px 90px;align-items:start;}
+.detail-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;line-height:1;margin-bottom:12px;}
+.detail-meta{display:flex;align-items:center;gap:18px;margin-bottom:28px;flex-wrap:wrap;}
+.dmeta{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.38);}
+.drating{color:var(--gold);font-size:13px;}
+.badge-row{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:32px;}
+.section-h{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;margin-bottom:14px;margin-top:36px;}
+.desc-text{color:rgba(255,255,255,.5);font-size:14px;line-height:1.75;max-width:540px;}
+.specs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px;}
+.spec-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:4px;padding:18px;}
+.spec-box .slbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px;}
+.spec-box .sval{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;}
+.amenities{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px;}
+.amenity{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:6px 13px;font-size:12px;color:rgba(255,255,255,.6);}
+.reviews-list{margin-top:14px;display:flex;flex-direction:column;gap:22px;}
+.review{padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.06);}
+.review-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;}
+.rev-author{font-weight:500;font-size:13px;}
+.rev-date{color:rgba(255,255,255,.28);font-size:11px;}
+.rev-stars{color:var(--gold);font-size:12px;}
+.rev-text{color:rgba(255,255,255,.47);font-size:13px;line-height:1.65;}
+
+/* BOOKING PANEL */
+.book-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:28px;position:sticky;top:82px;}
+.panel-price{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;line-height:1;margin-bottom:3px;}
+.panel-price small{font-size:15px;color:rgba(255,255,255,.35);font-weight:300;}
+.panel-rating{color:var(--gold);font-size:12px;margin-bottom:20px;}
+.book-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.bfield{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:12px 14px;}
+.bfield label{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--aqua);margin-bottom:5px;}
+.bfield input,.bfield select{background:transparent;border:none;outline:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;width:100%;cursor:none;}
+.bfield select option{background:var(--navy);}
+.price-breakdown{margin-top:16px;}
+.pr-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;color:rgba(255,255,255,.5);}
+.pr-row.total{color:var(--white);font-weight:500;padding-top:12px;border-top:1px solid rgba(255,255,255,.09);margin-top:4px;}
+.fee-note{font-size:10px;color:var(--aqua);}
+.reserve-btn{width:100%;background:var(--aqua);color:var(--deep);border:none;padding:16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;cursor:none;transition:background .25s,transform .2s;margin-top:10px;display:block;text-align:center;}
+.reserve-btn:hover{background:var(--white);transform:translateY(-1px);}
+.panel-note{text-align:center;font-size:11px;color:rgba(255,255,255,.25);margin-top:10px;}
+.owner-info{margin-top:24px;display:flex;align-items:center;gap:14px;padding:17px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:4px;}
+.owner-av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--ocean),var(--teal));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.owner-nm{font-weight:500;font-size:14px;margin-bottom:2px;}
+.owner-since{font-size:11px;color:rgba(255,255,255,.32);}
+.msg-btn{margin-left:auto;background:transparent;border:1px solid rgba(34,211,238,.3);color:var(--aqua);padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:11px;border-radius:2px;cursor:none;transition:background .22s,color .22s;white-space:nowrap;}
+.msg-btn:hover{background:var(--aqua);color:var(--deep);}
+
+/* ─── CHECKOUT PAGE ──────────────────────── */
+.checkout-wrap{display:grid;grid-template-columns:1fr 400px;gap:56px;padding:100px 60px 80px;max-width:1200px;margin:0 auto;}
+.steps-bar{display:flex;gap:0;margin-bottom:36px;align-items:center;}
+.stp{display:flex;align-items:center;gap:9px;}
+.stp-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.stp-done{background:var(--green);color:var(--white);}
+.stp-active{background:var(--aqua);color:var(--deep);}
+.stp-pending{background:rgba(255,255,255,.07);color:rgba(255,255,255,.3);}
+.stp-lbl{font-size:11px;letter-spacing:.05em;text-transform:uppercase;}
+.stp-lbl.a{color:var(--white);}
+.stp-lbl.p{color:rgba(255,255,255,.25);}
+.stp-line{flex:1;height:1px;background:rgba(255,255,255,.07);margin:0 10px;}
+.stp-line.done{background:var(--green);}
+.fsec{margin-bottom:32px;}
+.fsec-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+.fsec-n{width:28px;height:28px;border-radius:50%;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);color:var(--aqua);font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.policy-box{background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:14px 18px;font-size:13px;color:rgba(255,255,255,.52);line-height:1.65;margin-bottom:24px;}
+.policy-box strong{color:var(--aqua);font-weight:500;}
+.card-wrap{position:relative;}
+.card-ico{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:17px;}
+.pay-btn{width:100%;background:var(--aqua);color:var(--deep);border:none;padding:18px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;cursor:none;transition:background .25s,transform .2s;}
+.pay-btn:hover{background:var(--white);transform:translateY(-2px);}
+.pay-note{text-align:center;font-size:11px;color:rgba(255,255,255,.22);margin-top:10px;}
+/* SUMMARY */
+.sum-panel{position:sticky;top:82px;}
+.sum-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:8px;overflow:hidden;}
+.sum-img{height:150px;background:linear-gradient(135deg,#0d3b6e,#0e7490);display:flex;align-items:center;justify-content:center;font-size:68px;}
+.sum-body{padding:22px;}
+.sum-name{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;margin-bottom:3px;}
+.sum-type{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;}
+.sum-detail{display:flex;gap:16px;padding:14px 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:14px;flex-wrap:wrap;}
+.sd-lbl{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:3px;}
+.sd-val{font-size:13px;}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;color:rgba(255,255,255,.5);}
+.sum-row .ft{font-size:10px;color:var(--aqua);margin-top:1px;}
+.sum-row.total{color:var(--white);font-weight:500;font-size:15px;padding-top:12px;border-top:1px solid rgba(255,255,255,.09);margin-top:4px;}
+.cancel-note{margin-top:14px;font-size:11px;color:rgba(255,255,255,.28);line-height:1.5;}
+
+/* ─── LIST PAGE ──────────────────────────── */
+.list-hero{padding:120px 60px 56px;background:linear-gradient(135deg,var(--ocean) 0%,var(--teal) 55%,#0d4f3b 100%);position:relative;overflow:hidden;}
+.list-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/svg%3E");}
+.list-inner{position:relative;z-index:1;max-width:600px;}
+.list-perks{display:flex;gap:24px;flex-wrap:wrap;margin-top:28px;}
+.perk{display:flex;align-items:center;gap:9px;font-size:13px;color:rgba(255,255,255,.78);}
+.how-steps-row{background:var(--navy);display:flex;gap:0;padding:48px 60px;}
+.hs{flex:1;padding:0 28px;border-right:1px solid rgba(255,255,255,.07);}
+.hs:last-child{border-right:none;}
+.hs-num{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:rgba(34,211,238,.1);line-height:1;margin-bottom:7px;}
+.hs h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;margin-bottom:7px;}
+.hs p{font-size:12px;color:rgba(255,255,255,.38);line-height:1.65;}
+.list-body{display:grid;grid-template-columns:1fr 320px;gap:52px;padding:52px 60px 80px;align-items:start;}
+.form-section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;margin-bottom:4px;}
+.form-section-sub{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:22px;}
+.check-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.citem{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:4px;padding:10px 12px;cursor:none;transition:border-color .22s;}
+.citem:hover{border-color:rgba(34,211,238,.25);}
+.citem input{accent-color:var(--aqua);cursor:none;}
+.citem label{font-size:12px;color:rgba(255,255,255,.6);cursor:none;}
+.upload-zone{border:2px dashed rgba(34,211,238,.18);border-radius:6px;padding:44px;text-align:center;cursor:none;transition:border-color .25s,background .25s;}
+.upload-zone:hover{border-color:var(--aqua);background:rgba(34,211,238,.03);}
+.rate-field-wrap{position:relative;}
+.rdollar{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--aqua);font-size:18px;font-family:'Cormorant Garamond',serif;}
+.rate-field-wrap input{padding-left:34px!important;}
+.list-sidebar{position:sticky;top:82px;display:flex;flex-direction:column;gap:18px;}
+.sc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:26px;}
+.sc-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;margin-bottom:14px;}
+.sc-earn{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--aqua);line-height:1;margin-bottom:4px;}
+.sc-earn-sub{font-size:11px;color:rgba(255,255,255,.32);margin-bottom:18px;}
+.sc-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;}
+.sc-row:last-child{border-bottom:none;}
+.sc-row span:first-child{color:rgba(255,255,255,.42);}
+.sc-hl{color:var(--aqua)!important;}
+.sc-gn{color:var(--green)!important;}
+.trust-item{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:rgba(255,255,255,.48);line-height:1.55;margin-bottom:12px;}
+.submit-btn{width:100%;background:var(--aqua);color:var(--deep);border:none;padding:18px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;cursor:none;transition:background .25s,transform .2s;}
+.submit-btn:hover{background:var(--white);transform:translateY(-2px);}
+
+/* ─── LOGIN PAGE ─────────────────────────── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 24px;position:relative;overflow:hidden;}
+.login-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(13,59,110,.6) 0%,transparent 55%),radial-gradient(ellipse at 80% 30%,rgba(14,116,144,.25) 0%,transparent 50%),linear-gradient(180deg,var(--deep),#091525);}
+.login-card{position:relative;z-index:1;width:100%;max-width:440px;background:rgba(255,255,255,.04);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:48px;}
+.login-logo{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;letter-spacing:.05em;text-align:center;margin-bottom:8px;}
+.login-logo span{color:var(--aqua);}
+.login-subtitle{text-align:center;font-size:13px;color:rgba(255,255,255,.38);margin-bottom:36px;letter-spacing:.05em;}
+.login-tabs{display:flex;gap:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:4px;margin-bottom:28px;}
+.ltab{flex:1;padding:10px;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-align:center;border:none;background:transparent;color:rgba(255,255,255,.4);border-radius:2px;cursor:none;transition:all .25s;}
+.ltab.active{background:var(--aqua);color:var(--deep);font-weight:500;}
+.login-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5;font-size:13px;padding:12px 16px;border-radius:4px;margin-bottom:16px;display:none;}
+.login-error.show{display:block;}
+.login-btn{width:100%;background:var(--aqua);color:var(--deep);border:none;padding:16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;cursor:none;transition:background .25s,transform .2s;margin-top:4px;}
+.login-btn:hover{background:var(--white);transform:translateY(-1px);}
+.login-switch{text-align:center;margin-top:20px;font-size:13px;color:rgba(255,255,255,.35);}
+.login-switch button{background:none;border:none;color:var(--aqua);cursor:none;font-family:'DM Sans',sans-serif;font-size:13px;}
+.demo-hint{background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:12px 14px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:20px;line-height:1.6;}
+.demo-hint strong{color:var(--aqua);}
+
+/* ─── ADMIN DASHBOARD ───────────────────── */
+.admin-wrap{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+.admin-sidebar{background:#040d18;border-right:1px solid rgba(255,255,255,.06);padding:0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
+.admin-brand{padding:28px 24px;border-bottom:1px solid rgba(255,255,255,.06);}
+.admin-brand .logo{font-size:22px;}
+.admin-badge{display:inline-block;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:3px 8px;border-radius:2px;margin-top:5px;}
+.admin-nav{padding:20px 0;flex:1;}
+.admin-nav-item{display:flex;align-items:center;gap:12px;padding:12px 24px;font-size:13px;color:rgba(255,255,255,.45);cursor:none;transition:background .22s,color .22s;border:none;background:none;width:100%;font-family:'DM Sans',sans-serif;text-align:left;}
+.admin-nav-item:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.8);}
+.admin-nav-item.active{background:rgba(34,211,238,.07);color:var(--aqua);border-left:2px solid var(--aqua);}
+.admin-nav-item .ico{font-size:16px;width:20px;text-align:center;}
+.admin-nav-section{padding:16px 24px 6px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);}
+.admin-signout{padding:20px 24px;border-top:1px solid rgba(255,255,255,.05);}
+.admin-main{background:var(--deep);padding:0;overflow:hidden;}
+.admin-topbar{padding:20px 36px;background:rgba(10,22,40,.8);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.admin-page-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;}
+.admin-user{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.5);}
+.admin-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--ocean),var(--teal));display:flex;align-items:center;justify-content:center;font-size:14px;}
+.admin-content{padding:32px 36px;}
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:32px;}
+.stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:22px;}
+.stat-card-val{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;line-height:1;margin-bottom:4px;}
+.stat-card-lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.32);}
+.stat-card-change{font-size:12px;margin-top:10px;}
+.pos{color:var(--green);}
+.neg{color:var(--red);}
+.admin-table-wrap{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;margin-bottom:28px;}
+.admin-table-hd{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;}
+.admin-table-hd h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;}
+.atable{width:100%;border-collapse:collapse;}
+.atable th{padding:12px 20px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.28);border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-weight:400;}
+.atable td{padding:14px 20px;font-size:13px;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.04);}
+.atable tr:last-child td{border-bottom:none;}
+.atable tr:hover td{background:rgba(255,255,255,.02);}
+.status{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
+.s-active{background:rgba(16,185,129,.12);color:var(--green);}
+.s-pending{background:rgba(201,162,39,.12);color:var(--gold);}
+.s-cancelled{background:rgba(239,68,68,.1);color:#fca5a5;}
+.admin-grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+/* ─── SUCCESS OVERLAY ────────────────────── */
+.success-overlay{position:fixed;inset:0;background:rgba(6,16,30,.97);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;}
+.success-overlay.show{display:flex;}
+.suc-icon{font-size:76px;margin-bottom:22px;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275);}
+@keyframes popIn{from{transform:scale(0);}to{transform:scale(1);}}
+.suc-title{font-family:'Cormorant Garamond',serif;font-size:50px;font-weight:300;margin-bottom:10px;}
+.suc-title em{font-style:italic;color:var(--aqua);}
+.suc-sub{color:rgba(255,255,255,.48);font-size:16px;max-width:420px;line-height:1.65;margin-bottom:32px;}
+.suc-ref{font-size:12px;color:var(--aqua);letter-spacing:.15em;margin-bottom:36px;}
+
+/* ─── MOBILE ──────────────────────────────── */
+@media(max-width:960px){
+  .nav{padding:16px 24px!important;}
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .section,.cta-section{padding:70px 24px;}
+  .hero-content{padding:0 24px;}
+  .hero-stats,.scroll-hint,.loc-pill{display:none;}
+  .search-section{padding:0 24px;}
+  .search-bar{flex-direction:column;gap:16px;}
+  .boats-grid,.test-grid,.why-grid{grid-template-columns:1fr;}
+  .how-grid,.owner-inner{grid-template-columns:1fr;}
+  .page-hdr,.filter-bar,.browse-grid,.pagination{padding-left:24px!important;padding-right:24px!important;}
+  .filter-bar{top:57px;}
+  .gallery{grid-template-columns:1fr;height:240px;padding:0 24px;}
+  .gal-t1,.gal-t2{display:none;}
+  .gal-main{border-radius:6px;grid-row:auto;font-size:80px;}
+  .detail-wrap,.checkout-wrap,.list-body{grid-template-columns:1fr;padding:24px 24px 60px;}
+  .admin-wrap{grid-template-columns:1fr;}
+  .admin-sidebar{position:fixed;left:-260px;z-index:300;transition:left .3s;height:100vh;}
+  .admin-sidebar.open{left:0;}
+  .stat-cards{grid-template-columns:1fr 1fr;}
+  .admin-grid2,.fg2,.fg3{grid-template-columns:1fr;}
+  .specs-grid{grid-template-columns:1fr 1fr;}
+  .how-steps-row{flex-direction:column;padding:36px 24px;gap:24px;}
+  .list-hero{padding:100px 24px 48px;}
+  .cta-btns{flex-direction:column;align-items:center;}
+  .steps-bar{flex-wrap:wrap;gap:8px;}
+  .stp-line{display:none;}
+  footer.site-footer{padding:36px 24px 24px;}
+  .footer-inner{flex-direction:column;gap:14px;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ═══ NAV ═══════════════════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <button class="logo" onclick="go('home')">Anch<span>yr</span></button>
+  <ul class="nav-links" id="navLinks">
+    <li><button onclick="go('browse')">Browse Boats</button></li>
+    <li><button onclick="go('home');setTimeout(()=>document.getElementById('how').scrollIntoView({behavior:'smooth'}),100)">How It Works</button></li>
+    <li><button onclick="go('list')">List Your Boat</button></li>
+    <li id="navAuthArea">
+      <button onclick="go('login')" class="nav-cta">Sign In</button>
+    </li>
+  </ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══ PAGE: HOME ══════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="particle" style="width:4px;height:4px;left:14%;animation-duration:13s;bottom:0;animation-delay:0s;"></div>
+    <div class="particle" style="width:5px;height:5px;left:33%;animation-duration:17s;bottom:0;animation-delay:2s;"></div>
+    <div class="particle" style="width:3px;height:3px;left:57%;animation-duration:11s;bottom:0;animation-delay:4s;"></div>
+    <div class="particle" style="width:5px;height:5px;left:76%;animation-duration:15s;bottom:0;animation-delay:1.5s;"></div>
+    <svg class="wave-svg" viewBox="0 0 1440 180" xmlns="http://www.w3.org/2000/svg"><path d="M0,90 C360,180 1080,0 1440,90 L1440,180 L0,180 Z" fill="rgba(34,211,238,0.09)"/><path d="M0,120 C480,36 960,160 1440,120 L1440,180 L0,180 Z" fill="rgba(34,211,238,0.05)"/></svg>
+    <div class="loc-pill">📍 Miami, Florida</div>
+    <div class="hero-content">
+      <p class="hero-eye">Miami's Premier Boat Rental Marketplace</p>
+      <h1 class="hero-title">Rent a boat,<br/><em>effortlessly.</em></h1>
+      <p class="hero-sub">Connect with local boat owners and hit the water in Miami. From sunset cruises to deep-sea fishing — your perfect day starts here.</p>
+      <div class="hero-btns">
+        <button class="btn btn-primary" onclick="go('browse')">Find a Boat</button>
+        <button class="btn btn-outline" onclick="go('list')">List Your Boat</button>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">200+</div><div class="stat-lbl">Boats Available</div></div>
+      <div class="stat"><div class="stat-num">4.9★</div><div class="stat-lbl">Avg Rating</div></div>
+      <div class="stat"><div class="stat-num">$0</div><div class="stat-lbl">Listing Fee</div></div>
+    </div>
+    <div class="scroll-hint"><div class="scroll-line"></div><span class="scroll-lbl">Scroll to explore</span></div>
+  </section>
+
+  <!-- SEARCH -->
+  <div class="search-section">
+    <div class="search-bar">
+      <div class="sf"><label>Location</label>
+        <select><option>Miami Beach</option><option>Biscayne Bay</option><option>South Beach</option><option>Key Biscayne</option><option>Fort Lauderdale</option></select>
+      </div>
+      <div class="sf"><label>Date</label><input type="date" id="homeDate"/></div>
+      <div class="sf"><label>Boat Type</label>
+        <select><option>Any Type</option><option>Yacht</option><option>Pontoon</option><option>Speedboat</option><option>Sailboat</option><option>Fishing</option></select>
+      </div>
+      <div class="sf"><label>Guests</label>
+        <select><option>1–4</option><option>5–8</option><option>9–12</option><option>13+</option></select>
+      </div>
+      <button class="search-go" onclick="go('browse')">Search Boats</button>
+    </div>
+  </div>
+
+  <!-- FEATURED BOATS -->
+  <section class="section" style="background:var(--deep);" id="boats">
+    <div class="section-hdr">
+      <div><p class="eyebrow">Available Now</p><h2 class="display" style="font-size:clamp(36px,4.5vw,62px);">Featured <em>Vessels</em></h2></div>
+      <button class="btn btn-outline btn-sm" onclick="go('browse')">View All Boats</button>
+    </div>
+    <div class="boats-grid" id="homeBoatsGrid"></div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section how-section" id="how">
+    <p class="eyebrow">Simple Process</p>
+    <h2 class="display" style="font-size:clamp(36px,4.5vw,62px);margin-bottom:52px;">On the water in<br/><em>three steps</em></h2>
+    <div class="how-grid">
+      <div class="steps">
+        <div class="step" data-left><div class="step-n">01</div><div class="step-c"><h3>Search & Discover</h3><p>Browse hundreds of verified boats across Miami. Filter by type, size, price, and availability.</p></div></div>
+        <div class="step" data-left style="transition-delay:.15s"><div class="step-n">02</div><div class="step-c"><h3>Book Instantly</h3><p>Select your date, confirm your booking, and pay securely. Many boats offer instant confirmation.</p></div></div>
+        <div class="step" data-left style="transition-delay:.3s"><div class="step-n">03</div><div class="step-c"><h3>Hit the Water</h3><p>Meet your captain at the dock and enjoy Miami's stunning waters. We handle the rest.</p></div></div>
+      </div>
+      <div><div class="demo-card"><div class="demo-img">🛥️</div><div class="demo-body"><div class="demo-tag">Confirmed ✓</div><h4>Sea Ray Sundancer</h4><p>Biscayne Bay · Sat, 10am–2pm</p><div class="demo-foot"><div class="demo-price">$450<span style="color:rgba(255,255,255,.3);font-size:11px;font-weight:300">/hr</span></div><div class="demo-stars">★★★★★ 4.9</div></div></div></div></div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="section" style="background:var(--navy);position:relative;overflow:hidden;">
+    <div style="position:absolute;bottom:-80px;right:-60px;font-size:380px;opacity:.02;pointer-events:none;">⚓</div>
+    <p class="eyebrow">Why Anchyr</p>
+    <h2 class="display" style="font-size:clamp(36px,4.5vw,62px);">Built for<br/><em>Miami waters</em></h2>
+    <div class="why-grid">
+      <div class="why-card" data-fade><span class="why-icon">🛡️</span><h3>Fully Insured</h3><p>Every rental includes liability coverage. You're protected on the water so you can focus on fun.</p></div>
+      <div class="why-card" data-fade style="transition-delay:.1s"><span class="why-icon">✅</span><h3>Verified Owners</h3><p>All boat owners and captains are vetted, licensed, and reviewed by real renters.</p></div>
+      <div class="why-card" data-fade style="transition-delay:.2s"><span class="why-icon">💳</span><h3>Transparent Fees</h3><p>No surprises. A small service fee is added at checkout — paid by the renter, never the owner.</p></div>
+      <div class="why-card" data-fade style="transition-delay:.3s"><span class="why-icon">🌊</span><h3>Local Expertise</h3><p>We know Miami's best spots — from Biscayne Bay to the Sandbars. Our owners know it all.</p></div>
+    </div>
+  </section>
+
+  <!-- OWNER -->
+  <section class="section owner-section" id="owners">
+    <div class="owner-inner">
+      <div>
+        <p class="eyebrow" style="color:rgba(255,255,255,.65)">For Boat Owners</p>
+        <h2 class="owner-title">Turn your boat into<br/><em>passive income</em></h2>
+        <p class="owner-sub">List for free. Set your own rate. Keep 100% of what you charge — renters pay the service fee, not you. We handle payments, insurance, and support.</p>
+        <button class="btn btn-primary" style="background:var(--white);color:var(--deep);" onclick="go('list')">List My Boat — It's Free</button>
+      </div>
+      <div class="earn-widget" id="earnWidget">
+        <div class="earn-label">Your Hourly Rate</div>
+        <div class="rate-wrap"><span class="rate-dollar">$</span><input type="number" class="rate-input" id="rateInput" value="300" min="50" oninput="calcEarnings()"/><span class="rate-per">/hr</span></div>
+        <div class="earn-rows-wrap" id="earnRows">
+          <div class="earn-row"><span>⚓ Listing fee</span><span class="earn-hl">$0 — Always free</span></div>
+          <div class="earn-row"><span>💰 Service fee</span><span>Paid by the renter</span></div>
+          <div class="earn-row"><span>💵 You keep</span><span class="earn-hl">100% of your price</span></div>
+          <div class="earn-row"><span>🛡️ Insurance</span><span class="earn-hl">Included</span></div>
+        </div>
+        <div class="earn-result" id="earnResult">
+          <div class="earn-bar"><div class="earn-fill" id="earnFill"></div></div>
+          <div class="earn-caption" id="earnCaption">Based on 2 rentals/week at your rate</div>
+          <div class="earn-label" style="margin-top:14px;margin-bottom:6px;">Est. Monthly Earnings</div>
+          <div class="earn-num" id="earnNum">$2,400</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section" style="background:var(--deep);">
+    <p class="eyebrow">From Our Community</p>
+    <h2 class="display" style="font-size:clamp(36px,4.5vw,62px);">What people<br/><em>are saying</em></h2>
+    <div class="test-grid">
+      <div class="test-card" data-fade><div class="test-stars">★★★★★</div><p class="test-text">"Booked a yacht for my wife's birthday in under 5 minutes. Absolutely incredible — like nothing else in Miami."</p><div class="test-author"><div class="test-av">👨</div><div><div class="test-name">Marcus T.</div><div class="test-loc">Miami Beach, FL</div></div></div></div>
+      <div class="test-card" data-fade style="transition-delay:.15s"><div class="test-stars">★★★★★</div><p class="test-text">"I listed my Sea Ray 3 months ago and made over $9,000. Zero headaches — Anchyr handles everything."</p><div class="test-author"><div class="test-av">👩</div><div><div class="test-name">Sofia R.</div><div class="test-loc">Coral Gables, FL</div></div></div></div>
+      <div class="test-card" data-fade style="transition-delay:.3s"><div class="test-stars">★★★★★</div><p class="test-text">"Finally an app that makes renting a boat as easy as calling an Uber. Great pontoon for our group of 10."</p><div class="test-author"><div class="test-av">🧑</div><div><div class="test-name">Jordan K.</div><div class="test-loc">Brickell, FL</div></div></div></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-ring" style="width:760px;height:760px;animation-delay:0s;"></div>
+    <div class="cta-ring" style="width:540px;height:540px;animation-delay:1s;"></div>
+    <div class="cta-inner">
+      <p class="eyebrow">Ready to Sail?</p>
+      <h2 class="cta-title">Miami is calling.<br/><em>Answer it.</em></h2>
+      <p class="cta-sub">The ocean is right there. Your perfect boat is waiting.</p>
+      <div class="cta-btns">
+        <button class="btn btn-primary" onclick="go('browse')">Browse Boats Now</button>
+        <button class="btn btn-outline" onclick="go('list')">List Your Boat</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer"><div class="footer-inner"><p>© 2025 Anchyr · Miami, FL · anchyr.co</p><div class="footer-links"><button onclick="go('browse')">Browse</button><button onclick="go('list')">List Your Boat</button><button onclick="go('login')">Sign In</button></div></div></footer>
+</div>
+
+<!-- ═══ PAGE: BROWSE ════════════════════════════════════════════════ -->
+<div class="page" id="page-browse">
+  <div class="page-hdr">
+    <h1 class="display">Browse <em>available boats</em></h1>
+    <p>200+ verified vessels across Miami — filter to find your perfect match.</p>
+  </div>
+  <div class="filter-bar">
+    <span class="filter-lbl">Type</span>
+    <button class="fbtn active" onclick="setFilter(this)">All</button>
+    <button class="fbtn" onclick="setFilter(this)">Yacht</button>
+    <button class="fbtn" onclick="setFilter(this)">Speedboat</button>
+    <button class="fbtn" onclick="setFilter(this)">Sailboat</button>
+    <button class="fbtn" onclick="setFilter(this)">Pontoon</button>
+    <button class="fbtn" onclick="setFilter(this)">Fishing</button>
+    <select class="fsel"><option>Any Price</option><option>Under $200/hr</option><option>$200–$500/hr</option><option>$500+/hr</option></select>
+    <select class="fsel"><option>Any Location</option><option>Miami Beach</option><option>Biscayne Bay</option><option>Key Biscayne</option><option>Fort Lauderdale</option></select>
+    <span class="results-n">Showing 9 of 200+ boats</span>
+  </div>
+  <div class="browse-grid" id="browseGrid"></div>
+  <div class="pagination">
+    <div class="pgn active">1</div><div class="pgn">2</div><div class="pgn">3</div><div class="pgn">4</div><div class="pgn">→</div>
+  </div>
+  <footer class="site-footer"><div class="footer-inner"><p>© 2025 Anchyr · Miami, FL</p><div class="footer-links"><button onclick="go('home')">Home</button><button onclick="go('list')">List Your Boat</button></div></div></footer>
+</div>
+
+<!-- ═══ PAGE: BOAT DETAIL ═══════════════════════════════════════════ -->
+<div class="page" id="page-detail">
+  <div class="breadcrumb">
+    <button onclick="go('home')">Home</button> ›
+    <button onclick="go('browse')">Browse</button> ›
+    <span>Sea Ray Sundancer 380</span>
+  </div>
+  <div class="gallery">
+    <div class="gal-main">🛥️</div>
+    <div class="gal-t1">⚓</div>
+    <div class="gal-t2">🌊</div>
+  </div>
+  <div class="detail-wrap">
+    <div>
+      <h1 class="detail-title">Sea Ray Sundancer 380</h1>
+      <div class="detail-meta">
+        <span class="dmeta">Luxury Cruiser · 38ft</span>
+        <span class="drating">★★★★★</span>
+        <span class="dmeta">4.9 · 42 reviews</span>
+        <span class="dmeta">📍 Miami Beach, FL</span>
+      </div>
+      <div class="badge-row">
+        <span class="tag">✓ Verified</span><span class="tag">⚡ Instant Book</span><span class="tag">🛡️ Insured</span><span class="tag">👨‍✈️ Captain Included</span>
+      </div>
+      <h2 class="section-h">About this boat</h2>
+      <p class="desc-text">Experience Miami's stunning coastline aboard this immaculate 2021 Sea Ray Sundancer 380. Perfect for intimate sunset cruises or lively birthday celebrations. Features a spacious sun deck, fully equipped galley, and powerful 300hp twin engines for a smooth, exhilarating ride. Captain is included — just show up and enjoy.</p>
+      <h2 class="section-h">Specs</h2>
+      <div class="specs-grid">
+        <div class="spec-box"><div class="slbl">Length</div><div class="sval">38 ft</div></div>
+        <div class="spec-box"><div class="slbl">Capacity</div><div class="sval">10 guests</div></div>
+        <div class="spec-box"><div class="slbl">Engine</div><div class="sval">300hp Twin</div></div>
+        <div class="spec-box"><div class="slbl">Year</div><div class="sval">2021</div></div>
+        <div class="spec-box"><div class="slbl">Captain</div><div class="sval">Included</div></div>
+        <div class="spec-box"><div class="slbl">Min. Hours</div><div class="sval">2 hrs</div></div>
+      </div>
+      <h2 class="section-h">Amenities</h2>
+      <div class="amenities">
+        <span class="amenity">🎵 Bluetooth Sound</span><span class="amenity">🧊 Built-in Cooler</span><span class="amenity">☀️ Sun Deck</span><span class="amenity">🚿 Freshwater Shower</span><span class="amenity">🍽️ Galley Kitchen</span><span class="amenity">🛏️ Cabin Below</span><span class="amenity">🌊 Swim Platform</span><span class="amenity">🪂 Snorkel Gear</span>
+      </div>
+      <h2 class="section-h">Reviews</h2>
+      <div class="reviews-list">
+        <div class="review"><div class="review-hd"><div><div class="rev-author">Marcus T.</div><div class="rev-date">March 2025</div></div><div class="rev-stars">★★★★★</div></div><p class="rev-text">Incredible experience. The captain took us to the best spots. Boat was spotless, music was great. Already booked again.</p></div>
+        <div class="review"><div class="review-hd"><div><div class="rev-author">Priya S.</div><div class="rev-date">February 2025</div></div><div class="rev-stars">★★★★★</div></div><p class="rev-text">Birthday party for 9 people. Everything was perfect — the boat is even more beautiful in person. 10/10.</p></div>
+        <div class="review"><div class="review-hd"><div><div class="rev-author">James R.</div><div class="rev-date">January 2025</div></div><div class="rev-stars">★★★★☆</div></div><p class="rev-text">Great boat, smooth ride. Captain was friendly and very accommodating. Bring sunscreen — it gets hot out there!</p></div>
+      </div>
+    </div>
+    <div>
+      <div class="book-panel">
+        <div class="panel-price">$450 <small>/hr</small></div>
+        <div class="panel-rating">★★★★★ 4.9 · 42 reviews</div>
+        <div class="divider"></div>
+        <div class="book-fields">
+          <div class="bfield"><label>Date</label><input type="date" id="detailDate"/></div>
+          <div class="bfield"><label>Start Time</label><select><option>8:00 AM</option><option>9:00 AM</option><option selected>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>2:00 PM</option><option>4:00 PM</option><option>6:00 PM</option></select></div>
+          <div class="bfield"><label>Duration</label><select id="detailHrs" onchange="calcDetailPrice()"><option value="2">2 hrs</option><option value="3">3 hrs</option><option value="4" selected>4 hrs</option><option value="6">6 hrs</option><option value="8">8 hrs</option></select></div>
+          <div class="bfield"><label>Guests</label><select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
+        </div>
+        <div class="price-breakdown">
+          <div class="pr-row"><span>$450 × <span id="d-hrs">4</span> hrs</span><span id="d-base">$1,800</span></div>
+          <div class="pr-row"><span>Service fee <span class="fee-note">(paid by you)</span></span><span id="d-fee">$216</span></div>
+          <div class="pr-row total"><span>Total</span><span id="d-total">$2,016</span></div>
+        </div>
+        <button class="reserve-btn" onclick="go('checkout')">Reserve This Boat</button>
+        <p class="panel-note">You won't be charged yet · Free cancellation 48hrs before</p>
+      </div>
+      <div class="owner-info">
+        <div class="owner-av">🧑‍✈️</div>
+        <div><div class="owner-nm">Carlos M.</div><div class="owner-since">Owner since 2023 · ★ 4.9</div></div>
+        <button class="msg-btn">Message</button>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer"><div class="footer-inner"><p>© 2025 Anchyr · Miami, FL</p><div class="footer-links"><button onclick="go('home')">Home</button><button onclick="go('browse')">Browse</button></div></div></footer>
+</div>
+
+<!-- ═══ PAGE: CHECKOUT ══════════════════════════════════════════════ -->
+<div class="page" id="page-checkout">
+  <div class="checkout-wrap">
+    <div>
+      <div class="steps-bar">
+        <div class="stp"><div class="stp-num stp-done">✓</div><span class="stp-lbl a">Boat Selected</span></div>
+        <div class="stp-line done"></div>
+        <div class="stp"><div class="stp-num stp-active">2</div><span class="stp-lbl a">Your Details</span></div>
+        <div class="stp-line"></div>
+        <div class="stp"><div class="stp-num stp-pending">3</div><span class="stp-lbl p">Payment</span></div>
+        <div class="stp-line"></div>
+        <div class="stp"><div class="stp-num stp-pending">4</div><span class="stp-lbl p">Confirmed</span></div>
+      </div>
+      <div class="fsec">
+        <div class="fsec-title"><span class="fsec-n">1</span> Your Information</div>
+        <div style="height:16px;"></div>
+        <div class="fg2">
+          <div class="field"><label>First Name</label><input type="text" placeholder="John"/></div>
+          <div class="field"><label>Last Name</label><input type="text" placeholder="Doe"/></div>
+          <div class="field"><label>Email</label><input type="email" placeholder="john@email.com"/></div>
+          <div class="field"><label>Phone</label><input type="tel" placeholder="+1 (305) 000-0000"/></div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="fsec">
+        <div class="fsec-title"><span class="fsec-n">2</span> Trip Details</div>
+        <div style="height:16px;"></div>
+        <div class="fg2">
+          <div class="field"><label>Date</label><input type="date" id="coDate"/></div>
+          <div class="field"><label>Start Time</label><select><option>8:00 AM</option><option selected>10:00 AM</option><option>12:00 PM</option><option>2:00 PM</option><option>4:00 PM</option></select></div>
+          <div class="field"><label>Duration</label><select id="coDur" onchange="calcCheckout()"><option value="2">2 hours</option><option value="3">3 hours</option><option value="4" selected>4 hours</option><option value="6">6 hours</option><option value="8">8 hours</option></select></div>
+          <div class="field"><label>Guests</label><select><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+        </div>
+        <div class="field"><label>Special Requests</label><input type="text" placeholder="e.g. Birthday decorations, specific departure point..."/></div>
+      </div>
+      <div class="divider"></div>
+      <div class="fsec">
+        <div class="fsec-title"><span class="fsec-n">3</span> Payment</div>
+        <div style="height:16px;"></div>
+        <div class="policy-box"><strong>Service fee is charged to you.</strong> Your total includes a 12% service fee — paid by renters, never owners. This keeps listing free so owners offer better rates.</div>
+        <div class="field"><label>Card Number</label><div class="card-wrap"><input type="text" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19"/><div class="card-ico">💳</div></div></div>
+        <div class="fg2">
+          <div class="field"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7"/></div>
+          <div class="field"><label>CVC</label><input type="text" placeholder="123" maxlength="4"/></div>
+        </div>
+        <div class="field"><label>Name on Card</label><input type="text" placeholder="John Doe"/></div>
+      </div>
+      <button class="pay-btn" onclick="showSuccess()">Confirm & Pay <span id="payAmt">$2,016</span></button>
+      <p class="pay-note">🔒 256-bit SSL · Free cancellation 48hrs before your trip</p>
+    </div>
+    <div class="sum-panel">
+      <div class="sum-card">
+        <div class="sum-img">🛥️</div>
+        <div class="sum-body">
+          <div class="sum-name">Sea Ray Sundancer 380</div>
+          <div class="sum-type">Luxury Cruiser · 38ft · Miami Beach</div>
+          <div class="sum-detail">
+            <div><div class="sd-lbl">Date</div><div class="sd-val" id="co-date-show">—</div></div>
+            <div><div class="sd-lbl">Time</div><div class="sd-val">10:00 AM</div></div>
+            <div><div class="sd-lbl">Duration</div><div class="sd-val" id="co-dur-show">4 hrs</div></div>
+          </div>
+          <div class="sum-row"><span>$450 × <span id="co-hrs">4</span> hrs</span><span id="co-base">$1,800</span></div>
+          <div class="sum-row"><span><div>Service fee</div><div class="ft">Charged to renter</div></span><span id="co-fee">$216</span></div>
+          <div class="sum-row total"><span>Total Due</span><span id="co-total">$2,016</span></div>
+          <p class="cancel-note">ℹ️ Free cancellation if you cancel 48+ hours before your trip.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer"><div class="footer-inner"><p>© 2025 Anchyr · Miami, FL</p><div class="footer-links"><button onclick="go('detail')">← Back to Boat</button><button onclick="go('home')">Home</button></div></div></footer>
+</div>
+
+<!-- ═══ PAGE: LIST YOUR BOAT ════════════════════════════════════════ -->
+<div class="page" id="page-list">
+  <div class="list-hero">
+    <div class="list-inner">
+      <p class="eyebrow" style="color:rgba(255,255,255,.65)">For Boat Owners</p>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(38px,5vw,64px);font-weight:300;line-height:1.05;">List your boat,<br/><em style="font-style:italic;">start earning.</em></h1>
+      <p style="font-size:15px;color:rgba(255,255,255,.7);line-height:1.7;margin-top:14px;">Set your own price. Keep 100% of it. Renters pay the service fee — not you.</p>
+      <div class="list-perks">
+        <div class="perk">⚓ Free to list</div>
+        <div class="perk">💵 You keep 100%</div>
+        <div class="perk">🛡️ Insurance included</div>
+        <div class="perk">📅 Control your calendar</div>
+      </div>
+    </div>
+  </div>
+  <div class="how-steps-row">
+    <div class="hs"><div class="hs-num">01</div><h3>Create listing</h3><p>Fill out boat details, upload photos, set your rate. Takes ~10 minutes.</p></div>
+    <div class="hs"><div class="hs-num">02</div><h3>Get verified</h3><p>We verify your insurance and license. You go live to thousands of Miami renters.</p></div>
+    <div class="hs"><div class="hs-num">03</div><h3>Accept bookings</h3><p>Accept or decline any request. You control your calendar completely.</p></div>
+    <div class="hs"><div class="hs-num">04</div><h3>Get paid</h3><p>Funds deposited within 24 hours of your trip completing.</p></div>
+  </div>
+  <div class="list-body">
+    <div>
+      <!-- BOAT DETAILS -->
+      <div style="margin-bottom:32px;">
+        <div class="form-section-title">Your Boat</div>
+        <div class="form-section-sub">Tell us about the vessel you'd like to list.</div>
+        <div class="fg2">
+          <div class="field"><label>Boat Name</label><input type="text" placeholder="e.g. Blue Horizon"/></div>
+          <div class="field"><label>Boat Type</label><select><option value="">Select type</option><option>Yacht</option><option>Luxury Cruiser</option><option>Speedboat</option><option>Sailboat</option><option>Pontoon</option><option>Fishing Boat</option><option>Center Console</option><option>Wake Boat</option></select></div>
+          <div class="field"><label>Make / Brand</label><input type="text" placeholder="e.g. Sea Ray"/></div>
+          <div class="field"><label>Model</label><input type="text" placeholder="e.g. Sundancer 380"/></div>
+        </div>
+        <div class="fg3">
+          <div class="field"><label>Year</label><input type="number" placeholder="2021"/></div>
+          <div class="field"><label>Length (ft)</label><input type="number" placeholder="38"/></div>
+          <div class="field"><label>Max Guests</label><input type="number" placeholder="10"/></div>
+        </div>
+      </div>
+      <!-- PRICING -->
+      <div style="margin-bottom:32px;">
+        <div class="form-section-title">Your Pricing</div>
+        <div class="form-section-sub">You set your own rate. Renters pay a service fee on top — you keep every dollar you charge.</div>
+        <div class="fg3">
+          <div class="field"><label>Hourly Rate (USD)</label><div class="rate-field-wrap"><span class="rdollar">$</span><input type="number" id="listRate" placeholder="300" min="50" oninput="updateListEarnings()"/></div></div>
+          <div class="field"><label>Minimum Hours</label><select><option>1 hour</option><option selected>2 hours</option><option>3 hours</option><option>4 hours</option></select></div>
+          <div class="field"><label>Cancellation Policy</label><select><option>Flexible (24hr)</option><option selected>Moderate (48hr)</option><option>Strict (7 days)</option></select></div>
+        </div>
+      </div>
+      <!-- LOCATION -->
+      <div style="margin-bottom:32px;">
+        <div class="form-section-title">Location & Availability</div>
+        <div class="form-section-sub">Where is your boat docked and when is it available?</div>
+        <div class="fg2">
+          <div class="field"><label>Marina / Dock</label><input type="text" placeholder="e.g. Miami Beach Marina"/></div>
+          <div class="field"><label>Area</label><select><option>Miami Beach</option><option>Biscayne Bay</option><option>South Beach</option><option>Key Biscayne</option><option>Fort Lauderdale</option></select></div>
+        </div>
+      </div>
+      <!-- AMENITIES -->
+      <div style="margin-bottom:32px;">
+        <div class="form-section-title">Description & Amenities</div>
+        <div class="form-section-sub">Tell renters what makes your boat special.</div>
+        <div class="field"><label>Boat Description</label><textarea placeholder="Describe your boat — best features, experience renters can expect, nearby destinations..."></textarea></div>
+        <div class="check-grid" style="margin-top:8px;">
+          <div class="citem"><input type="checkbox" id="am1"/><label for="am1">🎵 Bluetooth</label></div>
+          <div class="citem"><input type="checkbox" id="am2" checked/><label for="am2">🧊 Cooler</label></div>
+          <div class="citem"><input type="checkbox" id="am3"/><label for="am3">☀️ Sun Deck</label></div>
+          <div class="citem"><input type="checkbox" id="am4"/><label for="am4">🚿 Shower</label></div>
+          <div class="citem"><input type="checkbox" id="am5"/><label for="am5">🍽️ Galley</label></div>
+          <div class="citem"><input type="checkbox" id="am6"/><label for="am6">🛏️ Cabin</label></div>
+          <div class="citem"><input type="checkbox" id="am7" checked/><label for="am7">🌊 Swim Platform</label></div>
+          <div class="citem"><input type="checkbox" id="am8"/><label for="am8">🪂 Snorkel Gear</label></div>
+          <div class="citem"><input type="checkbox" id="am9"/><label for="am9">🎣 Fishing Gear</label></div>
+        </div>
+      </div>
+      <!-- PHOTOS -->
+      <div style="margin-bottom:32px;">
+        <div class="form-section-title">Photos</div>
+        <div class="form-section-sub">Listings with 6+ photos get 3× more bookings.</div>
+        <div class="upload-zone"><div style="font-size:38px;margin-bottom:10px;">📸</div><div style="font-size:15px;margin-bottom:6px;">Drag & drop photos here</div><div style="font-size:12px;color:rgba(255,255,255,.3);">or <span style="color:var(--aqua);">browse files</span> · JPG, PNG · Max 20 photos</div></div>
+      </div>
+      <!-- OWNER INFO -->
+      <div style="margin-bottom:32px;">
+        <div class="form-section-title">Your Contact Info</div>
+        <div class="fg2">
+          <div class="field"><label>Full Name</label><input type="text" placeholder="Your full name"/></div>
+          <div class="field"><label>Phone</label><input type="tel" placeholder="+1 (305) 000-0000"/></div>
+          <div class="field"><label>Email</label><input type="email" placeholder="you@email.com"/></div>
+          <div class="field"><label>Payout Method</label><select><option>Bank Transfer</option><option>Zelle</option><option>PayPal</option></select></div>
+        </div>
+      </div>
+      <button class="submit-btn" onclick="showListSuccess()">Submit My Listing — Free</button>
+      <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.22);margin-top:10px;">Reviewed within 24 hours · No credit card required</p>
+    </div>
+    <!-- SIDEBAR -->
+    <div class="list-sidebar">
+      <div class="sc">
+        <div class="sc-title">Est. Monthly Earnings</div>
+        <div class="sc-earn" id="listEarn">$2,400</div>
+        <div class="sc-earn-sub">at your rate, 2 rentals/week</div>
+        <div class="sc-row"><span>Your rate</span><span id="listRateShow">$300/hr</span></div>
+        <div class="sc-row"><span>Listing fee</span><span class="sc-hl">$0 free</span></div>
+        <div class="sc-row"><span>Service fee</span><span class="sc-gn">Renter pays</span></div>
+        <div class="sc-row"><span>You keep</span><span class="sc-hl">100%</span></div>
+        <div class="sc-row"><span>Payout</span><span>Within 24hrs</span></div>
+      </div>
+      <div class="sc">
+        <div class="sc-title">Why Anchyr</div>
+        <div class="trust-item"><span>🛡️</span>Full liability insurance on every booking at no cost to you.</div>
+        <div class="trust-item"><span>📞</span>24/7 support handles renters — you just show up and captain.</div>
+        <div class="trust-item"><span>✅</span>Renters are verified with ID before every trip.</div>
+        <div class="trust-item"><span>💵</span>You set your price. Renters pay the fee. You keep everything you charge.</div>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer"><div class="footer-inner"><p>© 2025 Anchyr · Miami, FL</p><div class="footer-links"><button onclick="go('home')">Home</button><button onclick="go('browse')">Browse</button></div></div></footer>
+</div>
+
+<!-- ═══ PAGE: LOGIN ══════════════════════════════════════════════════ -->
+<div class="page" id="page-login">
+  <div class="login-wrap">
+    <div class="login-bg"></div>
+    <div class="login-card">
+      <div class="login-logo">Anch<span>yr</span></div>
+      <p class="login-subtitle">Miami's Boat Rental Marketplace</p>
+
+      <!-- MODE TOGGLE: signin vs signup -->
+      <div class="login-tabs" style="margin-bottom:20px;">
+        <button class="ltab active" id="modeSignin" onclick="switchMode('signin')">Sign In</button>
+        <button class="ltab" id="modeSignup" onclick="switchMode('signup')">Create Account</button>
+      </div>
+
+      <!-- ACCOUNT TYPE (signup only) -->
+      <div id="accountTypeRow" style="display:none;margin-bottom:18px;">
+        <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--aqua);margin-bottom:8px;">I want to...</div>
+        <div class="login-tabs">
+          <button class="ltab active" id="typeRenter" onclick="switchAccountType('renter')">Rent a Boat</button>
+          <button class="ltab" id="typeOwner" onclick="switchAccountType('owner')">List My Boat</button>
+        </div>
+      </div>
+
+      <!-- NAME FIELDS (signup only) -->
+      <div id="nameRow" style="display:none;">
+        <div class="fg2" style="margin-bottom:14px;">
+          <div class="field"><label>First Name</label><input type="text" id="firstName" placeholder="John"/></div>
+          <div class="field"><label>Last Name</label><input type="text" id="lastName" placeholder="Doe"/></div>
+        </div>
+      </div>
+
+      <div class="login-error" id="loginError"></div>
+      <div class="login-success" id="loginSuccess" style="display:none;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:#6ee7b7;font-size:13px;padding:12px 16px;border-radius:4px;margin-bottom:16px;"></div>
+
+      <div class="field"><label>Email Address</label><input type="email" id="loginEmail" placeholder="you@email.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••"/></div>
+
+      <div id="confirmPwRow" style="display:none;">
+        <div class="field"><label>Confirm Password</label><input type="password" id="loginPwConfirm" placeholder="••••••••"/></div>
+      </div>
+
+      <!-- loading spinner -->
+      <div id="authSpinner" style="display:none;text-align:center;padding:12px 0;color:var(--aqua);font-size:13px;letter-spacing:.1em;">Processing...</div>
+
+      <button class="login-btn" id="authBtn" onclick="doAuth()">Sign In</button>
+
+      <div class="login-switch" id="modeSwitchText">
+        Don't have an account? <button onclick="switchMode('signup')">Create one free →</button>
+      </div>
+
+      <div style="text-align:center;margin-top:14px;">
+        <button onclick="go('home')" style="background:none;border:none;color:rgba(255,255,255,.25);font-size:12px;cursor:none;font-family:'DM Sans',sans-serif;">← Back to site</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: ADMIN DASHBOARD ═══════════════════════════════════════ -->
+<div class="page" id="page-admin">
+  <div class="admin-wrap">
+    <div class="admin-sidebar" id="adminSidebar">
+      <div class="admin-brand">
+        <div class="logo">Anch<span>yr</span></div>
+        <div class="admin-badge">Admin Panel</div>
+      </div>
+      <div class="admin-nav">
+        <div class="admin-nav-section">Main</div>
+        <button class="admin-nav-item active" onclick="adminTab('overview',this)"><span class="ico">📊</span>Overview</button>
+        <button class="admin-nav-item" onclick="adminTab('bookings',this)"><span class="ico">📅</span>Bookings</button>
+        <button class="admin-nav-item" onclick="adminTab('boats',this)"><span class="ico">🛥️</span>Boats</button>
+        <button class="admin-nav-item" onclick="adminTab('users',this)"><span class="ico">👥</span>Users</button>
+        <div class="admin-nav-section">Finance</div>
+        <button class="admin-nav-item" onclick="adminTab('revenue',this)"><span class="ico">💰</span>Revenue</button>
+        <button class="admin-nav-item" onclick="adminTab('payouts',this)"><span class="ico">💳</span>Payouts</button>
+        <div class="admin-nav-section">Settings</div>
+        <button class="admin-nav-item" onclick="adminTab('settings',this)"><span class="ico">⚙️</span>Settings</button>
+      </div>
+      <div class="admin-signout">
+        <button class="admin-nav-item" style="width:100%;color:rgba(255,100,100,.6);" onclick="signOut()"><span class="ico">🚪</span>Sign Out</button>
+      </div>
+    </div>
+    <div class="admin-main">
+      <div class="admin-topbar">
+        <div class="admin-page-title" id="adminPageTitle">Overview</div>
+        <div class="admin-user"><div class="admin-avatar">👑</div><span>Admin</span></div>
+      </div>
+      <div class="admin-content" id="adminContent"><!-- filled by JS --></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAYS -->
+<div class="success-overlay" id="paySuccess">
+  <div class="suc-icon">⚓</div>
+  <h1 class="suc-title">You're <em>all set!</em></h1>
+  <p class="suc-sub">Your booking is confirmed. The owner has been notified and you'll get full details by email. See you on the water!</p>
+  <div class="suc-ref">Booking Ref: ANCHYR-28471</div>
+  <button class="btn btn-primary" onclick="closeSuccess();go('home')">Back to Home</button>
+</div>
+<div class="success-overlay" id="listSuccess">
+  <div class="suc-icon">🚢</div>
+  <h1 class="suc-title">Listing <em>submitted!</em></h1>
+  <p class="suc-sub">We'll review your listing within 24 hours. You'll get an email once you're live and ready to earn.</p>
+  <button class="btn btn-primary" onclick="closeSuccess();go('home')" style="margin-top:8px;">Back to Home</button>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ─── CURSOR ───────────────────────────────────────────────────────
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let cx=0,cy=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;cursor.style.left=cx+'px';cursor.style.top=cy+'px';});
+(function loop(){rx+=(cx-rx)*.12;ry+=(cy-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.addEventListener('mouseover',e=>{
+  if(e.target.matches('a,button,input,select,textarea,.bcard,.why-card,.test-card,.pgn,.fbtn,.citem,.check-item,.amenity,.spec-box,.upload-zone')){
+    cursor.style.width='20px';cursor.style.height='20px';ring.style.width='58px';ring.style.height='58px';
+  }
+});
+document.addEventListener('mouseout',e=>{
+  if(e.target.matches('a,button,input,select,textarea,.bcard,.why-card,.test-card,.pgn,.fbtn,.citem,.check-item,.amenity,.spec-box,.upload-zone')){
+    cursor.style.width='12px';cursor.style.height='12px';ring.style.width='38px';ring.style.height='38px';
+  }
+});
+
+// ─── NAV SCROLL ────────────────────────────────────────────────────
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('solid',window.scrollY>50);});
+nav.classList.add('solid'); // always solid unless on hero
+
+// ─── ROUTER ────────────────────────────────────────────────────────
+let currentPage='home';
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+page);
+  if(!el)return;
+  el.classList.add('active');
+  currentPage=page;
+  window.scrollTo({top:0,behavior:'instant'});
+  if(page==='home'){nav.style.background='';nav.classList.remove('solid');}
+  else{nav.classList.add('solid');}
+  if(page==='browse')renderBrowseGrid();
+  if(page==='home')renderHomeGrid();
+  if(page==='detail'){setDate('detailDate');calcDetailPrice();}
+  if(page==='checkout'){setDate('coDate');calcCheckout();setCoDateDisplay();}
+  if(page==='admin')renderAdminOverview();
+  initObserver();
+}
+
+function setDate(id){
+  const el=document.getElementById(id);
+  if(el){const t=new Date().toISOString().split('T')[0];el.value=t;el.min=t;}
+}
+
+// ─── BOATS DATA ─────────────────────────────────────────────────────
+const boats=[
+  {emoji:'🛥️',bg:'bg1',name:'Sea Ray Sundancer 380',type:'Luxury Cruiser · 38ft',guests:10,engine:'300hp',rating:'★★★★★ 4.9',price:'$450',badge:'Instant Book'},
+  {emoji:'⛵',bg:'bg2',name:'Beneteau Oceanis 45',type:'Sailboat · 45ft',guests:8,engine:'Full Sail',rating:'★★★★★ 5.0',price:'$350',badge:'Top Rated'},
+  {emoji:'🚤',bg:'bg3',name:'Chaparral 270 Signature',type:'Speedboat · 27ft',guests:8,engine:'220hp',rating:'★★★★★ 4.8',price:'$280',badge:'Popular'},
+  {emoji:'🛳️',bg:'bg4',name:'Azimut 55 Flybridge',type:'Mega Yacht · 55ft',guests:16,engine:'Twin',rating:'★★★★★ 5.0',price:'$850',badge:'New'},
+  {emoji:'🎣',bg:'bg5',name:'Grady-White Canyon 336',type:'Fishing Boat · 32ft',guests:6,engine:'Full Tackle',rating:'★★★★☆ 4.7',price:'$220',badge:null},
+  {emoji:'🌊',bg:'bg6',name:'Hurricane SunDeck 2690',type:'Pontoon · 24ft',guests:12,engine:'150hp',rating:'★★★★★ 4.9',price:'$165',badge:'Best Value'},
+  {emoji:'⚓',bg:'bg7',name:'Boston Whaler 270',type:'Center Console · 27ft',guests:8,engine:'300hp',rating:'★★★★★ 4.8',price:'$195',badge:null},
+  {emoji:'🌅',bg:'bg8',name:'Sunseeker Manhattan 60',type:'Motor Yacht · 60ft',guests:18,engine:'Twin',rating:'★★★★★ 5.0',price:'$1,200',badge:'Sunset Pick'},
+  {emoji:'🏄',bg:'bg9',name:'Malibu Wakesetter 23 LSV',type:'Wake Boat · 23ft',guests:10,engine:'400hp',rating:'★★★★★ 4.9',price:'$250',badge:null},
+];
+
+function boatCard(b,i,onclick){
+  const delay=i*0.08;
+  return `<div class="bcard" data-fade style="transition-delay:${delay}s;">
+    <div class="bcard-img ${b.bg}">${b.emoji}${b.badge?`<div class="bcard-badge">${b.badge}</div>`:''}
+    </div>
+    <div class="bcard-body">
+      <div class="bcard-name">${b.name}</div>
+      <div class="bcard-type">${b.type}</div>
+      <div class="bcard-specs">
+        <div class="spec"><strong>${b.guests}</strong>Guests</div>
+        <div class="spec"><strong>${b.engine}</strong>Engine</div>
+      </div>
+      <div class="bcard-foot">
+        <div><div class="bcard-price">${b.price} <small>/hr</small></div><div class="bcard-rating">${b.rating}</div></div>
+        <button class="view-btn" onclick="${onclick}">View Boat</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHomeGrid(){
+  const g=document.getElementById('homeBoatsGrid');
+  if(g) g.innerHTML=boats.slice(0,6).map((b,i)=>boatCard(b,i,"go('detail')")).join('');
+}
+function renderBrowseGrid(){
+  const g=document.getElementById('browseGrid');
+  if(g) g.innerHTML=boats.map((b,i)=>boatCard(b,i,"go('detail')")).join('');
+}
+
+// ─── FILTERS ───────────────────────────────────────────────────────
+function setFilter(btn){
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ─── INTERSECTION OBSERVER ─────────────────────────────────────────
+function initObserver(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});
+  },{threshold:.1});
+  document.querySelectorAll('[data-fade],[data-left],.step,.test-card,.why-card,.bcard').forEach(el=>{
+    el.classList.remove('vis');
+    obs.observe(el);
+  });
+  // earn widget
+  const ew=document.getElementById('earnWidget');
+  if(ew){
+    const ewObs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          document.getElementById('earnRows').classList.add('show');
+          setTimeout(()=>{document.getElementById('earnResult').classList.add('show');document.getElementById('earnFill').classList.add('go');},350);
+          ewObs.disconnect();
+        }
+      });
+    },{threshold:.3});
+    ewObs.observe(ew);
+  }
+}
+
+// ─── PRICING CALCS ─────────────────────────────────────────────────
+function calcDetailPrice(){
+  const hrs=parseInt(document.getElementById('detailHrs').value)||4;
+  const base=450*hrs,fee=Math.round(base*.12),total=base+fee;
+  document.getElementById('d-hrs').textContent=hrs;
+  document.getElementById('d-base').textContent='$'+base.toLocaleString();
+  document.getElementById('d-fee').textContent='$'+fee.toLocaleString();
+  document.getElementById('d-total').textContent='$'+total.toLocaleString();
+}
+function calcCheckout(){
+  const hrs=parseInt(document.getElementById('coDur').value)||4;
+  const base=450*hrs,fee=Math.round(base*.12),total=base+fee;
+  document.getElementById('co-hrs').textContent=hrs;
+  document.getElementById('co-base').textContent='$'+base.toLocaleString();
+  document.getElementById('co-fee').textContent='$'+fee.toLocaleString();
+  document.getElementById('co-total').textContent='$'+total.toLocaleString();
+  document.getElementById('payAmt').textContent='$'+total.toLocaleString();
+  const sel=document.getElementById('coDur');
+  document.getElementById('co-dur-show').textContent=sel.options[sel.selectedIndex].text;
+}
+function setCoDateDisplay(){
+  const d=document.getElementById('coDate');
+  if(d){const t=new Date();t.setDate(t.getDate()+3);const s=t.toISOString().split('T')[0];d.value=s;document.getElementById('co-date-show').textContent=t.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+}
+function calcEarnings(){
+  const r=parseInt(document.getElementById('rateInput').value)||300;
+  const m=r*4*4*2;
+  document.getElementById('earnNum').textContent='$'+m.toLocaleString();
+  document.getElementById('earnCaption').textContent='Based on 2 rentals/week at $'+r+'/hr';
+}
+function updateListEarnings(){
+  const r=parseInt(document.getElementById('listRate').value)||300;
+  const m=r*4*4*2;
+  document.getElementById('listEarn').textContent='$'+m.toLocaleString();
+  document.getElementById('listRateShow').textContent='$'+r+'/hr';
+}
+
+// ─── CARD NUMBER FORMAT ────────────────────────────────────────────
+document.addEventListener('input',e=>{
+  if(e.target.id==='cardNum'){
+    let v=e.target.value.replace(/\D/g,'').substring(0,16);
+    e.target.value=v.replace(/(.{4})/g,'$1 ').trim();
+  }
+});
+
+// ─── SUPABASE AUTH ─────────────────────────────────────────────────
+const SUPABASE_URL = 'https://rhhbqobqvhrbxmrrmyiv.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoaGJxb2JxdmhyYnhtcnJteWl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTkxNTEsImV4cCI6MjA5MDQ3NTE1MX0.Kw-_dgDLqlQKApKIRBsSsAS2gNnCCA_qMz0JRRKx0ec';
+
+// tiny supabase fetch helper
+async function sbFetch(path, opts={}){
+  const res = await fetch(SUPABASE_URL + path, {
+    ...opts,
+    headers: {
+      'apikey': SUPABASE_ANON,
+      'Authorization': 'Bearer ' + (currentSession?.access_token || SUPABASE_ANON),
+      'Content-Type': 'application/json',
+      ...(opts.headers||{})
+    }
+  });
+  return res;
+}
+
+let currentSession = null;
+let currentUser = null;
+let authMode = 'signin';
+let accountType = 'renter';
+
+// check for existing session on load
+async function initAuth(){
+  const stored = localStorage.getItem('anchyr_session');
+  if(stored){
+    try{
+      const s = JSON.parse(stored);
+      // verify token still valid
+      const res = await fetch(SUPABASE_URL+'/auth/v1/user',{
+        headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+s.access_token}
+      });
+      if(res.ok){
+        const user = await res.json();
+        currentSession = s;
+        currentUser = user;
+        updateNavForUser(user);
+      } else {
+        localStorage.removeItem('anchyr_session');
+      }
+    } catch(e){ localStorage.removeItem('anchyr_session'); }
+  }
+}
+
+function updateNavForUser(user){
+  const meta = user.user_metadata || {};
+  const name = meta.first_name || user.email.split('@')[0];
+  const role = meta.role || 'renter';
+  const authArea = document.getElementById('navAuthArea');
+  const emoji = role==='admin'?'👑': role==='owner'?'⚓':'👤';
+  authArea.innerHTML=`<div class="nav-user"><span class="nav-user-name">${emoji} ${name}</span><button class="nav-signout" onclick="signOut()">Sign out</button></div>`;
+}
+
+function switchMode(mode){
+  authMode = mode;
+  document.getElementById('modeSignin').classList.toggle('active', mode==='signin');
+  document.getElementById('modeSignup').classList.toggle('active', mode==='signup');
+  document.getElementById('accountTypeRow').style.display = mode==='signup'?'block':'none';
+  document.getElementById('nameRow').style.display = mode==='signup'?'block':'none';
+  document.getElementById('confirmPwRow').style.display = mode==='signup'?'block':'none';
+  document.getElementById('authBtn').textContent = mode==='signin'?'Sign In':'Create Account';
+  document.getElementById('modeSwitchText').innerHTML = mode==='signin'
+    ? `Don't have an account? <button onclick="switchMode('signup')" style="background:none;border:none;color:var(--aqua);cursor:none;font-family:'DM Sans',sans-serif;font-size:13px;">Create one free →</button>`
+    : `Already have an account? <button onclick="switchMode('signin')" style="background:none;border:none;color:var(--aqua);cursor:none;font-family:'DM Sans',sans-serif;font-size:13px;">Sign in →</button>`;
+  clearAuthMessages();
+}
+
+function switchAccountType(type){
+  accountType = type;
+  document.getElementById('typeRenter').classList.toggle('active', type==='renter');
+  document.getElementById('typeOwner').classList.toggle('active', type==='owner');
+}
+
+function showAuthError(msg){
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById('loginSuccess').style.display='none';
+}
+function showAuthSuccess(msg){
+  const el = document.getElementById('loginSuccess');
+  el.textContent = msg;
+  el.style.display='block';
+  document.getElementById('loginError').classList.remove('show');
+}
+function clearAuthMessages(){
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('loginSuccess').style.display='none';
+}
+
+function setAuthLoading(on){
+  document.getElementById('authSpinner').style.display = on?'block':'none';
+  document.getElementById('authBtn').style.display = on?'none':'block';
+}
+
+async function doAuth(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPw').value;
+  clearAuthMessages();
+
+  if(!email || !pw){ showAuthError('Please fill in all fields.'); return; }
+  if(pw.length < 6){ showAuthError('Password must be at least 6 characters.'); return; }
+
+  if(authMode === 'signup'){
+    const pwc = document.getElementById('loginPwConfirm').value;
+    if(pw !== pwc){ showAuthError('Passwords do not match.'); return; }
+    const first = document.getElementById('firstName').value.trim();
+    const last = document.getElementById('lastName').value.trim();
+    if(!first || !last){ showAuthError('Please enter your first and last name.'); return; }
+    await doSignUp(email, pw, first, last);
+  } else {
+    await doSignIn(email, pw);
+  }
+}
+
+async function doSignUp(email, pw, first, last){
+  setAuthLoading(true);
+  try{
+    const res = await fetch(SUPABASE_URL+'/auth/v1/signup',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_ANON,'Content-Type':'application/json'},
+      body: JSON.stringify({
+        email, password: pw,
+        data: { first_name: first, last_name: last, role: accountType }
+      })
+    });
+    const data = await res.json();
+    setAuthLoading(false);
+    if(data.error){ showAuthError(data.error.message || data.msg || 'Signup failed.'); return; }
+    if(data.session){
+      // auto confirmed
+      currentSession = data.session;
+      currentUser = data.user;
+      localStorage.setItem('anchyr_session', JSON.stringify(data.session));
+      updateNavForUser(data.user);
+      showAuthSuccess('Account created! Welcome to Anchyr 🎉');
+      setTimeout(()=>{ go(accountType==='owner'?'list':'home'); }, 1200);
+    } else {
+      // email confirmation required
+      showAuthSuccess('Account created! Check your email to confirm your address, then sign in.');
+      switchMode('signin');
+    }
+  } catch(e){
+    setAuthLoading(false);
+    showAuthError('Network error. Please try again.');
+  }
+}
+
+async function doSignIn(email, pw){
+  setAuthLoading(true);
+  try{
+    const res = await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_ANON,'Content-Type':'application/json'},
+      body: JSON.stringify({email, password: pw})
+    });
+    const data = await res.json();
+    setAuthLoading(false);
+    if(data.error || !data.access_token){
+      showAuthError('Incorrect email or password. Please try again.');
+      return;
+    }
+    currentSession = data;
+    currentUser = data.user;
+    localStorage.setItem('anchyr_session', JSON.stringify(data));
+    updateNavForUser(data.user);
+    const role = data.user?.user_metadata?.role || 'renter';
+    if(role === 'admin') go('admin');
+    else if(role === 'owner') go('list');
+    else go('home');
+  } catch(e){
+    setAuthLoading(false);
+    showAuthError('Network error. Please try again.');
+  }
+}
+
+async function signOut(){
+  try{
+    if(currentSession){
+      await fetch(SUPABASE_URL+'/auth/v1/logout',{
+        method:'POST',
+        headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+currentSession.access_token}
+      });
+    }
+  } catch(e){}
+  currentSession = null;
+  currentUser = null;
+  localStorage.removeItem('anchyr_session');
+  document.getElementById('navAuthArea').innerHTML=`<button onclick="go('login')" class="nav-cta">Sign In</button>`;
+  go('home');
+}
+
+// ─── ADMIN DASHBOARD ───────────────────────────────────────────────
+function adminTab(tab,el){
+  document.querySelectorAll('.admin-nav-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('adminPageTitle').textContent=el.textContent.trim();
+  const fn={'overview':renderAdminOverview,'bookings':renderAdminBookings,'boats':renderAdminBoats,'users':renderAdminUsers,'revenue':renderAdminRevenue,'payouts':renderAdminPayouts,'settings':renderAdminSettings};
+  if(fn[tab])fn[tab]();
+}
+function adminContent(html){document.getElementById('adminContent').innerHTML=html;}
+
+function renderAdminOverview(){
+  adminContent(`
+  <div class="stat-cards">
+    <div class="stat-card"><div class="stat-card-val">$48,230</div><div class="stat-card-lbl">Revenue This Month</div><div class="stat-card-change pos">↑ 23% vs last month</div></div>
+    <div class="stat-card"><div class="stat-card-val">184</div><div class="stat-card-lbl">Bookings This Month</div><div class="stat-card-change pos">↑ 17% vs last month</div></div>
+    <div class="stat-card"><div class="stat-card-val">47</div><div class="stat-card-lbl">Active Listings</div><div class="stat-card-change pos">↑ 5 new this week</div></div>
+    <div class="stat-card"><div class="stat-card-val">1,204</div><div class="stat-card-lbl">Registered Users</div><div class="stat-card-change pos">↑ 89 this month</div></div>
+  </div>
+  <div class="admin-grid2">
+    <div class="admin-table-wrap">
+      <div class="admin-table-hd"><h3>Recent Bookings</h3><button class="btn btn-outline btn-sm" onclick="adminTab('bookings',document.querySelector('.admin-nav-item:nth-child(3)'))">View All</button></div>
+      <table class="atable">
+        <thead><tr><th>Renter</th><th>Boat</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Marcus T.</td><td>Sea Ray 380</td><td>Mar 28</td><td>$2,016</td><td><span class="status s-active">Confirmed</span></td></tr>
+          <tr><td>Priya S.</td><td>Azimut 55</td><td>Mar 27</td><td>$4,704</td><td><span class="status s-active">Confirmed</span></td></tr>
+          <tr><td>Jordan K.</td><td>Hurricane Pontoon</td><td>Mar 26</td><td>$739</td><td><span class="status s-active">Completed</span></td></tr>
+          <tr><td>Alex M.</td><td>Beneteau 45</td><td>Mar 25</td><td>$1,568</td><td><span class="status s-cancelled">Cancelled</span></td></tr>
+          <tr><td>Sara L.</td><td>Chaparral 270</td><td>Mar 25</td><td>$1,254</td><td><span class="status s-pending">Pending</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="admin-table-wrap">
+      <div class="admin-table-hd"><h3>Pending Listings</h3></div>
+      <table class="atable">
+        <thead><tr><th>Owner</th><th>Boat</th><th>Rate</th><th>Submitted</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>David R.</td><td>Sea Ray 280</td><td>$320/hr</td><td>Today</td><td><button class="view-btn" style="font-size:11px;padding:5px 12px;">Approve</button></td></tr>
+          <tr><td>Maria G.</td><td>Sunseeker 48</td><td>$780/hr</td><td>Yesterday</td><td><button class="view-btn" style="font-size:11px;padding:5px 12px;">Approve</button></td></tr>
+          <tr><td>Tom W.</td><td>Grady-White 250</td><td>$210/hr</td><td>Mar 27</td><td><button class="view-btn" style="font-size:11px;padding:5px 12px;">Approve</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`);
+}
+
+function renderAdminBookings(){
+  adminContent(`<div class="admin-table-wrap">
+    <div class="admin-table-hd"><h3>All Bookings</h3><div style="display:flex;gap:10px;"><select class="fsel" style="border-radius:4px;">
+      <option>All Statuses</option><option>Confirmed</option><option>Pending</option><option>Completed</option><option>Cancelled</option></select></div></div>
+    <table class="atable">
+      <thead><tr><th>Ref</th><th>Renter</th><th>Boat</th><th>Owner</th><th>Date</th><th>Hours</th><th>Base</th><th>Fee</th><th>Total</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>ANC-28471</td><td>Marcus T.</td><td>Sea Ray 380</td><td>Carlos M.</td><td>Mar 28</td><td>4h</td><td>$1,800</td><td>$216</td><td>$2,016</td><td><span class="status s-active">Confirmed</span></td></tr>
+        <tr><td>ANC-28470</td><td>Priya S.</td><td>Azimut 55</td><td>Ana P.</td><td>Mar 27</td><td>4h</td><td>$3,400</td><td>$408</td><td>$3,808</td><td><span class="status s-active">Confirmed</span></td></tr>
+        <tr><td>ANC-28469</td><td>Jordan K.</td><td>Hurricane Pontoon</td><td>Mike R.</td><td>Mar 26</td><td>4h</td><td>$660</td><td>$79</td><td>$739</td><td><span class="status s-active">Completed</span></td></tr>
+        <tr><td>ANC-28468</td><td>Alex M.</td><td>Beneteau 45</td><td>Lisa T.</td><td>Mar 25</td><td>4h</td><td>$1,400</td><td>$168</td><td>$1,568</td><td><span class="status s-cancelled">Cancelled</span></td></tr>
+        <tr><td>ANC-28467</td><td>Sara L.</td><td>Chaparral 270</td><td>James W.</td><td>Mar 25</td><td>4h</td><td>$1,120</td><td>$134</td><td>$1,254</td><td><span class="status s-pending">Pending</span></td></tr>
+        <tr><td>ANC-28466</td><td>Chris B.</td><td>Boston Whaler 270</td><td>Dan F.</td><td>Mar 24</td><td>3h</td><td>$585</td><td>$70</td><td>$655</td><td><span class="status s-active">Completed</span></td></tr>
+      </tbody>
+    </table>
+  </div>`);
+}
+
+function renderAdminBoats(){
+  adminContent(`<div class="admin-table-wrap">
+    <div class="admin-table-hd"><h3>All Listings</h3><div style="display:flex;gap:10px;align-items:center;"><select class="fsel" style="border-radius:4px;"><option>All</option><option>Active</option><option>Pending</option><option>Suspended</option></select></div></div>
+    <table class="atable">
+      <thead><tr><th>Boat</th><th>Type</th><th>Owner</th><th>Rate</th><th>Location</th><th>Bookings</th><th>Rating</th><th>Status</th></tr></thead>
+      <tbody>
+        ${boats.map((b,i)=>`<tr><td>${b.emoji} ${b.name}</td><td>${b.type.split('·')[0].trim()}</td><td>Owner ${i+1}</td><td>${b.price}/hr</td><td>Miami Beach</td><td>${Math.floor(Math.random()*50)+10}</td><td>${b.rating.split(' ')[1]}</td><td><span class="status s-active">Active</span></td></tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`);
+}
+
+function renderAdminUsers(){
+  const users=[
+    {name:'Marcus T.',email:'marcus@email.com',type:'Renter',joined:'Jan 2025',bookings:5,status:'Active'},
+    {name:'Sofia R.',email:'sofia@email.com',type:'Owner',joined:'Nov 2024',bookings:41,status:'Active'},
+    {name:'Jordan K.',email:'jordan@email.com',type:'Renter',joined:'Feb 2025',bookings:3,status:'Active'},
+    {name:'Carlos M.',email:'carlos@email.com',type:'Owner',joined:'Sep 2024',bookings:68,status:'Active'},
+    {name:'Priya S.',email:'priya@email.com',type:'Renter',joined:'Mar 2025',bookings:2,status:'Active'},
+    {name:'Alex M.',email:'alex@email.com',type:'Renter',joined:'Dec 2024',bookings:7,status:'Suspended'},
+  ];
+  adminContent(`<div class="admin-table-wrap">
+    <div class="admin-table-hd"><h3>All Users</h3></div>
+    <table class="atable">
+      <thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Joined</th><th>Bookings</th><th>Status</th></tr></thead>
+      <tbody>${users.map(u=>`<tr><td>${u.name}</td><td>${u.email}</td><td><span class="tag" style="font-size:9px;">${u.type}</span></td><td>${u.joined}</td><td>${u.bookings}</td><td><span class="status ${u.status==='Active'?'s-active':'s-cancelled'}">${u.status}</span></td></tr>`).join('')}</tbody>
+    </table>
+  </div>`);
+}
+
+function renderAdminRevenue(){
+  adminContent(`
+  <div class="stat-cards">
+    <div class="stat-card"><div class="stat-card-val">$48,230</div><div class="stat-card-lbl">Gross Revenue (March)</div></div>
+    <div class="stat-card"><div class="stat-card-val">$5,787</div><div class="stat-card-lbl">Anchyr Fees (12%)</div></div>
+    <div class="stat-card"><div class="stat-card-val">$42,443</div><div class="stat-card-lbl">Owner Payouts</div></div>
+    <div class="stat-card"><div class="stat-card-val">$261/hr</div><div class="stat-card-lbl">Avg Booking Rate</div></div>
+  </div>
+  <div class="admin-table-wrap">
+    <div class="admin-table-hd"><h3>Monthly Revenue Breakdown</h3></div>
+    <table class="atable">
+      <thead><tr><th>Month</th><th>Bookings</th><th>Gross</th><th>Anchyr Fees</th><th>Owner Payouts</th></tr></thead>
+      <tbody>
+        <tr><td>March 2025</td><td>184</td><td>$48,230</td><td class="pos">$5,787</td><td>$42,443</td></tr>
+        <tr><td>February 2025</td><td>157</td><td>$39,180</td><td class="pos">$4,701</td><td>$34,479</td></tr>
+        <tr><td>January 2025</td><td>134</td><td>$33,400</td><td class="pos">$4,008</td><td>$29,392</td></tr>
+        <tr><td>December 2024</td><td>198</td><td>$52,650</td><td class="pos">$6,318</td><td>$46,332</td></tr>
+      </tbody>
+    </table>
+  </div>`);
+}
+
+function renderAdminPayouts(){
+  adminContent(`<div class="admin-table-wrap">
+    <div class="admin-table-hd"><h3>Pending Payouts</h3></div>
+    <table class="atable">
+      <thead><tr><th>Owner</th><th>Boat</th><th>Trip Date</th><th>Booking Total</th><th>Owner Payout</th><th>Method</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Carlos M.</td><td>Sea Ray 380</td><td>Mar 28</td><td>$2,016</td><td>$1,800</td><td>Bank ACH</td><td><span class="status s-pending">Pending</span></td></tr>
+        <tr><td>Ana P.</td><td>Azimut 55</td><td>Mar 27</td><td>$3,808</td><td>$3,400</td><td>Zelle</td><td><span class="status s-pending">Pending</span></td></tr>
+        <tr><td>Mike R.</td><td>Hurricane Pontoon</td><td>Mar 26</td><td>$739</td><td>$660</td><td>Bank ACH</td><td><span class="status s-active">Paid</span></td></tr>
+      </tbody>
+    </table>
+  </div>`);
+}
+
+function renderAdminSettings(){
+  adminContent(`<div style="max-width:600px;">
+    <div class="admin-table-wrap" style="margin-bottom:24px;">
+      <div class="admin-table-hd"><h3>Platform Settings</h3></div>
+      <div style="padding:24px;">
+        <div class="field"><label>Platform Name</label><input type="text" value="Anchyr"/></div>
+        <div class="field"><label>Service Fee (%)</label><input type="number" value="12" min="0" max="30"/></div>
+        <div class="field"><label>Payout Delay (hours after trip)</label><input type="number" value="24"/></div>
+        <div class="field"><label>Support Email</label><input type="email" value="support@anchyr.co"/></div>
+        <button class="btn btn-primary btn-sm" style="margin-top:8px;">Save Settings</button>
+      </div>
+    </div>
+  </div>`);
+}
+
+// ─── SUCCESS OVERLAYS ──────────────────────────────────────────────
+function showSuccess(){document.getElementById('paySuccess').classList.add('show');}
+function showListSuccess(){document.getElementById('listSuccess').classList.add('show');}
+function closeSuccess(){document.querySelectorAll('.success-overlay').forEach(o=>o.classList.remove('show'));}
+
+// ─── MOBILE MENU ───────────────────────────────────────────────────
+function toggleMobileMenu(){
+  const links=document.getElementById('navLinks');
+  if(links.style.display==='flex'){links.style.display='none';}
+  else{links.style.display='flex';links.style.flexDirection='column';links.style.position='fixed';links.style.top='60px';links.style.left='0';links.style.right='0';links.style.background='rgba(6,16,30,0.98)';links.style.padding='20px';links.style.gap='16px';links.style.zIndex='199';links.style.borderBottom='1px solid rgba(34,211,238,0.1)';}
+}
+
+// INIT
+const hd=document.getElementById('homeDate');
+if(hd){const t=new Date().toISOString().split('T')[0];hd.value=t;hd.min=t;}
+renderHomeGrid();
+initObserver();
+initAuth();
+</script>
+</body>
+</html>
